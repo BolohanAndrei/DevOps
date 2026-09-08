@@ -1,0 +1,322 @@
+# 📋 Step-by-Step Manual Provisioning Guide
+
+Follow this guide sequentially to manually configure each tier in the 5-tier architecture.
+
+> [!IMPORTANT]
+> Always configure the backend services first before launching the application and reverse proxy:
+> **1. DB ➔ 2. Memcached ➔ 3. RabbitMQ ➔ 4. Tomcat ➔ 5. Nginx**
+
+---
+
+## 1. Database Tier (`db` - 192.168.56.15)
+
+SSH into the database VM:
+```bash
+vagrant ssh db
+sudo -i
+```
+
+Install and start MariaDB:
+```bash
+yum update -y
+yum install epel-release -y
+yum install git mariadb-server -y
+systemctl start mariadb
+systemctl enable mariadb
+```
+
+Secure the database and configure credentials:
+```bash
+# Say yes (Y) to all
+mysql_secure_installation
+```
+Enter `admin` as password, remove test database and anonymous users.
+
+Log in to MariaDB and create the schema and user:
+```bash
+mysql -u root -padmin
+```
+```sql
+CREATE DATABASE accounts;
+GRANT ALL PRIVILEGES ON accounts.* TO 'admin'@'%' IDENTIFIED BY 'admin';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+Create the file to get the database dump and import schema:
+```bash
+mkdir -p /tmp/project/src/main/resources
+
+cat << 'EOF' > /tmp/project/src/main/resources/db_backup.sql
+-- MySQL dump 10.13  Distrib 5.7.18, for Linux (x86_64)
+-- Host: localhost    Database: accounts
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+DROP TABLE IF EXISTS `role`;
+CREATE TABLE `role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+LOCK TABLES `role` WRITE;
+/*!40000 ALTER TABLE `role` DISABLE KEYS */;
+INSERT INTO `role` VALUES (1,'ROLE_USER');
+/*!40000 ALTER TABLE `role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) DEFAULT NULL,
+  `userEmail` varchar(255) DEFAULT NULL,
+  `profileImg` varchar(255) DEFAULT NULL,
+  `profileImgPath` varchar(255) DEFAULT NULL,
+  `dateOfBirth` varchar(255) DEFAULT NULL,
+  `fatherName` varchar(255) DEFAULT NULL,
+  `motherName` varchar(255) DEFAULT NULL,
+  `gender` varchar(255) DEFAULT NULL,
+  `maritalStatus` varchar(255) DEFAULT NULL,
+  `permanentAddress` varchar(255) DEFAULT NULL,
+  `tempAddress` varchar(255) DEFAULT NULL,
+  `primaryOccupation` varchar(255) DEFAULT NULL,
+  `secondaryOccupation` varchar(255) DEFAULT NULL,
+  `skills` varchar(255) DEFAULT NULL,
+  `phoneNumber` varchar(255) DEFAULT NULL,
+  `secondaryPhoneNumber` varchar(255) DEFAULT NULL,
+  `nationality` varchar(255) DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  `workingExperience` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (7,'admin_vp','admin@visualpathit.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'$2a$11$0a7VdTr4rfCQqtsvpng6GuJnzUmQ7gZiHXgzGPgm5hkRa3avXgBLK'),(8,'WahidKhan','wahid.khan74@gmail.com',NULL,NULL,'28/03/1994','M Khan','R Khan','male','unMarried','Ameerpet,Hyderabad','Ameerpet,Hyderabad','Software Engineer','Software Engineer','Java HTML CSS ','8888888888','8888888888','Indian','english','2 ','$2a$11$UgG9TkHcgl02LxlqxRHYhOf7Xv4CxFmFEgS0FpUdk42OeslI.6JAW'),(9,'Gayatri','gayatri@gmail.com',NULL,NULL,'20/06/1993','K','L','male','unMarried','Ameerpet,Hyderabad','Ameerpet,Hyderabad','Software Engineer','Software Engineer','Java HTML CSS ','9999999999','9999999999','India','english','5','$2a$11$gwvsvUrFU.YirMM1Yb7NweFudLUM91AzH5BDFnhkNzfzpjG.FplYO'),(10,'WahidKhan2','wahid.khan741@gmail.com',NULL,NULL,'28/03/1994','M Khan','R Khan','male','unMarried','Ameerpet,Hyderabad','Ameerpet,Hyderabad','Software Engineer','Software Engineer','Java HTML CSS ','7777777777','777777777','India','english','7','$2a$11$6oZEgfGGQAH23EaXLVZ2WOSKxcEJFnBSw2N2aghab0s2kcxSQwjhC'),(11,'KiranKumar','kiran@gmail.com',NULL,NULL,'8/12/1993','K K','RK','male','unMarried','California','James Street','Software Engineer','Software Engineer','Java HTML CSS ','1010101010','1010101010','India','english','10','$2a$11$EXwpna1MlFFlKW5ut1iVi.AoeIulkPPmcOHFO8pOoQt1IYU9COU0m'),(12,'Saikumar','sai@gmail.com',NULL,NULL,'20/06/1993','Sai RK','Sai AK','male','unMarried','California','US','Software Engineer','Software Engineer','Java HTML CSS AWS','8888888111','8888888111','India','english','8','$2a$11$pzWNzzR.HUkHzz2zhAgqOeCl0WaTgY33NxxJ7n0l.rnEqjB9JO7vy'),(13,'RamSai','ram@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'$2a$11$6BSmYPrT8I8b9yHmx.uTRu/QxnQM2vhZYQa8mR33aReWA4WFihyGK');
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `user_role`;
+CREATE TABLE `user_role` (
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`,`role_id`),
+  KEY `fk_user_role_roleid_idx` (`role_id`),
+  CONSTRAINT `fk_user_role_roleid` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_user_role_userid` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `user_role` WRITE;
+/*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
+INSERT INTO `user_role` VALUES (4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(11,1),(12,1),(13,1);
+/*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+EOF
+mysql -u root -padmin accounts < vprofile-project/src/main/resources/db_backup.sql
+
+# Verify tables
+mysql -u root -padmin accounts -e "SHOW TABLES;"
+
+systemctl restart mariadb
+exit
+```
+
+---
+
+## 2. In-Memory Cache Tier (`memcache` - 192.168.56.14)
+
+SSH into the cache VM:
+```bash
+vagrant ssh memcache
+sudo -i
+```
+
+Install and configure Memcached:
+```bash
+yum update -y
+yum install epel-release dnf -y
+dnf install memcached -y
+
+# Configure Memcached to listen on all interfaces (0.0.0.0)
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/sysconfig/memcached
+
+systemctl start memcached
+systemctl enable memcached
+
+# Verify listening port
+ss -tunlp | grep 11211
+exit
+```
+
+---
+
+## 3. Message Broker Tier (`rabbit` - 192.168.56.13)
+
+SSH into the message broker VM:
+```bash
+vagrant ssh rabbit
+sudo -i
+```
+
+Install Erlang and RabbitMQ:
+```bash
+yum update -y
+yum install epel-release wget dnf -y
+dnf -y install centos-release-rabbitmq-38
+yum install erlang socat rabbitmq-server -y
+
+systemctl enable rabbitmq-server
+systemctl start rabbitmq-server
+
+# Allow remote connections and create test user
+sh -c 'echo "[{rabbit, [{loopback_users, []}]}]." > /etc/rabbitmq/rabbitmq.config'
+rabbitmqctl add_user test test
+rabbitmqctl set_user_tags test administrator
+
+systemctl restart rabbitmq-server
+exit
+```
+
+---
+
+## 4. Application Tier (`tomcat` - 192.168.56.12)
+
+SSH into the application server:
+```bash
+vagrant ssh tomcat
+sudo -i
+```
+
+Install Java 11, Maven, Git, and build tools:
+```bash
+yum update -y
+yum install epel-release dnf -y
+dnf -y install java-11-openjdk java-11-openjdk-devel git maven wget
+```
+
+Install Apache Tomcat 9:
+```bash
+cd /tmp
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
+tar xzvf apache-tomcat-9.0.75.tar.gz
+useradd --home-dir /usr/local/tomcat --shell /sbin/nologin tomcat
+cp -r /tmp/apache-tomcat-9.0.75/* /usr/local/tomcat/
+chown -R tomcat.tomcat /usr/local/tomcat
+```
+
+Create the systemd service file:
+```bash
+cat << 'EOF' > /etc/systemd/system/tomcat.service
+[Unit]
+Description=Apache Tomcat Web Application Server
+After=network.target
+
+[Service]
+User=tomcat
+WorkingDirectory=/usr/local/tomcat
+Environment=JRE_HOME=/usr/lib/jvm/jre
+Environment=JAVA_HOME=/usr/lib/jvm/jre
+Environment=CATALINA_HOME=/usr/local/tomcat
+Environment=CATALINE_BASE=/usr/local/tomcat
+ExecStart=/usr/local/tomcat/bin/catalina.sh run
+ExecStop=/usr/local/tomcat/bin/shutdown.sh
+SyslogIdentifier=tomcat-%i
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl start tomcat
+systemctl enable tomcat
+```
+
+Build and deploy the Java application:
+```bash
+cd /tmp
+git clone -b main https://github.com/hkhcoder/vprofile-project.git
+cd vprofile-project
+
+# Compile and package into WAR
+mvn install
+
+# Deploy to Tomcat root
+systemctl stop tomcat
+rm -rf /usr/local/tomcat/webapps/ROOT*
+cp target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
+chown -R tomcat.tomcat /usr/local/tomcat/webapps
+systemctl start tomcat
+exit
+```
+
+---
+
+## 5. Web Proxy Tier (`nginx` - 192.168.56.11)
+
+SSH into the Nginx load balancer:
+```bash
+vagrant ssh nginx
+sudo -i
+```
+
+Install Nginx:
+```bash
+apt update -y
+apt install nginx -y
+```
+
+Configure reverse proxy:
+```bash
+cat << 'EOF' > /etc/nginx/sites-available/vproapp
+upstream vproapp {
+    server tomcat:8080;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://vproapp;
+    }
+}
+EOF
+
+# Activate configuration
+rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/vproapp /etc/nginx/sites-enabled/vproapp
+
+nginx -t
+systemctl restart nginx
+exit
+```
+
+---
+
+## 6. End-to-End Testing
+
+Open your browser and navigate to:
+```
+http://192.168.56.11
+```
+
+Log in with default test credentials:
+- **Username**: `admin_vp`
+- **Password**: `admin_vp`
