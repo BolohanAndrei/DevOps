@@ -1,117 +1,78 @@
-# 🚀 DevOps Engineering Lab & Multi-Tier Projects
+# ⚡ 5-Tier Web Application (Automated Infrastructure as Code)
 
-<div align="center">
-
-![Linux](https://img.shields.io/badge/Linux-Ubuntu%20%7C%20CentOS-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![VMs](https://img.shields.io/badge/Virtual%20Machines-Multi--VM%20Architecture-blueviolet?style=for-the-badge&logo=virtualbox)
-![Vagrant](https://img.shields.io/badge/Vagrant-1563FF?style=for-the-badge&logo=vagrant)
-![AWS](https://img.shields.io/badge/AWS-Cloud%20Services-232F3E?style=for-the-badge&logo=amazon-aws)
-![Domains](https://img.shields.io/badge/Domains%20%26%20DNS-Hostmanager%20%7C%20Route53-orange?style=for-the-badge&logo=cloudflare)
-<br/>
-![Nginx](https://img.shields.io/badge/Nginx-Reverse%20Proxy-009639?style=for-the-badge&logo=nginx)
-![Tomcat](https://img.shields.io/badge/Tomcat-App%20Server-F8DC75?style=for-the-badge&logo=apache-tomcat&logoColor=black)
-![MySQL/MariaDB](https://img.shields.io/badge/MySQL%20%2F%20MariaDB-Database-003545?style=for-the-badge&logo=mariadb)
-![Memcache](https://img.shields.io/badge/Memcached-In--Memory%20Cache-4B8BBE?style=for-the-badge)
-![RabbitMQ](https://img.shields.io/badge/RabbitMQ-Message%20Broker-FF6600?style=for-the-badge&logo=rabbitmq)
-![SonarQube](https://img.shields.io/badge/SonarQube-Code%20Quality-4E9BCD?style=for-the-badge&logo=sonarqube)
-
-<p align="center">
-  <b>A continuous, hands-on journey from local multi-VM virtualized environments to automated enterprise infrastructure, code analysis, and cloud delivery.</b>
-</p>
-
-</div>
+This module completely automates the multi-VM 5-tier architecture using Vagrant shell provisioners and modular Bash provisioning scripts.
 
 ---
 
-> [!NOTE]
-> ### 🚧 Project Status: **To Be Continued...**
-> This repository is an evolving DevOps portfolio and learning hub. Modules are continuously added as separate feature/project branches as I progress through real-world DevOps architectures.
+## 🏗️ Architecture & VM Topology
 
----
-
-## 🛠️ Core Technologies & Tooling
-
-| Category | Technologies & Tools | Purpose in Projects |
-| :--- | :--- | :--- |
-| **Virtualization & OS** | **Linux** (CentOS 7, Ubuntu 22.04), **VMs**, **Vagrant** | Multi-node guest provisioning, private networking, and host-guest synchronization. |
-| **Web & App Servers** | **Nginx**, **Apache Tomcat** | Reverse proxy, SSL termination, load balancing, and Java Servlet/WAR container hosting. |
-| **Data & Cache** | **MySQL / MariaDB**, **Memcached** | Relational data persistence, schema seeding, and sub-millisecond memory caching. |
-| **Messaging** | **RabbitMQ** | Asynchronous message broker, task queue, and decouple inter-service dependencies. |
-| **Cloud & Networking** | **AWS**, **Domains & DNS** | Cloud infrastructure lift-and-shift, domain routing, and internal host resolution. |
-| **Code Quality & CI/CD**| **SonarQube (Sonar)**, **Maven**, **Git** | Static code analysis, quality gates, dependency packaging, and version control. |
-
----
-
-## 📚 Project Modules & Branch Index
-
-Every project module lives in its own dedicated Git branch with isolated configurations, scripts, and documentation:
-
-| Module | Branch Name | Status | Tech Stack | Highlights | Switch Command |
-| :---: | :--- | :---: | :--- | :--- | :--- |
-| **01** | [`multi-vm`](#-module-01-multi-vm) | ✅ Completed | Linux (CentOS, Ubuntu), VMs, Vagrant, Domains | Dual-VM setup hosting static web template & LAMP WordPress stack. | `git checkout multi-vm` |
-| **02** | [`local-setup-manual`](#-module-02-local-setup-manual) | ✅ Completed | Linux, VMs, MySQL/MariaDB, Memcache, RabbitMQ, Tomcat, Nginx | 5-Tier enterprise Java stack configured manually step-by-step. | `git checkout local-setup-manual` |
-| **03** | [`local-setup-automated`](#-module-03-local-setup-automated) | ✅ Completed | Vagrant Shell Provisioning, Bash, Linux Services | Fully automated deployment of the 5-tier architecture via Bash scripts. | `git checkout local-setup-automated` |
-| **04** | `Coming Next` | ⏳ *Coming Next* | Coming Next | Coming Next | *TBD* |
-
----
-
-## 🏛️ System Architectures
-
-### 1. Multi-VM Setup (`multi-vm`)
-- **`website` (192.168.33.15)**: CentOS 7 with Apache HTTPD serving a responsive web template.
-- **`wordpress` (192.168.33.16)**: Ubuntu 22.04 LTS running a full LAMP stack with WordPress and MySQL.
-
-### 2. Enterprise 5-Tier Web Architecture (`local-setup-manual` & `local-setup-automated`)
 ```mermaid
 flowchart LR
-    Client([User / Browser]) -->|Port 80| NGINX[Nginx Reverse Proxy\n192.168.56.11]
-    NGINX -->|Port 8080| TOMCAT[Tomcat App Server\n192.168.56.12]
-    TOMCAT -->|Port 3306| DB[(MySQL / MariaDB\n192.168.56.15)]
-    TOMCAT -->|Port 11211| MEMCACHE[Memcached Cache\n192.168.56.14]
-    TOMCAT -->|Port 5672| RMQ[RabbitMQ Broker\n192.168.56.13]
+    Browser([Browser]) -->|HTTP :80| Nginx[nginx: 192.168.56.11]
+    Nginx -->|Proxy :8080| Tomcat[tomcat: 192.168.56.12]
+    Tomcat -->|JDBC :3306| DB[(db: 192.168.56.15)]
+    Tomcat -->|Cache :11211| Memcache[memcache: 192.168.56.14]
+    Tomcat -->|AMQP :5672| Rabbit[rabbit: 192.168.56.13]
 ```
 
----
-
-## 💻 Prerequisites & Environment Setup
-
-Ensure the following tools are installed on your workstation:
-- [VirtualBox](https://www.virtualbox.org/)
-- [Vagrant](https://developer.hashicorp.com/vagrant/install)
-- Vagrant Hostmanager Plugin:
-  ```bash
-  vagrant plugin install vagrant-hostmanager
-  ```
+| Node           | OS               | Memory  | Provisioner Script | Role                                                  |
+| :------------- | :--------------- | :------ | :----------------- | :---------------------------------------------------- |
+| **`db`**       | CentOS Stream 9  | 1024 MB | `mysql.sh`         | MariaDB, accounts DB, firewall rules, schema dump     |
+| **`memcache`** | CentOS Stream 9  | 512 MB  | `memcache.sh`      | Memcached listener on `0.0.0.0:11211`                 |
+| **`rabbit`**   | CentOS Stream 9  | 1024 MB | `rabbitmq.sh`      | Erlang, RabbitMQ server, admin user                   |
+| **`tomcat`**   | CentOS Stream 9  | 1024 MB | `tomcat.sh`        | Java 11, Tomcat 9, Maven packaging, WAR deployment    |
+| **`nginx`**    | Ubuntu 22.04 LTS | 512 MB  | `nginx.sh`         | Nginx reverse proxy routing requests to `tomcat:8080` |
 
 ---
 
-## 🧭 How to Navigate & Run Projects
+## 📜 Provisioning Scripts Reference
 
-Each branch is structured so you can run the project directly at the root:
+- **[`mysql.sh`](mysql.sh)**: Installs MariaDB server, configures root password and application user (`admin`), sets up firewall rules for port 3306, and imports `db_backup.sql`.
+- **[`memcache.sh`](memcache.sh)**: Configures Memcached to bind to `0.0.0.0` and enables systemd service.
+- **[`rabbitmq.sh`](rabbitmq.sh)**: Adds package repositories, installs RabbitMQ 3.8 and Erlang, configures users, and starts the service.
+- **[`tomcat.sh`](tomcat.sh)**: Configures system user `tomcat`, downloads Tomcat 9 binaries, writes a custom `systemd` unit, clones the source repository, runs `mvn install`, and places `ROOT.war` into `webapps/`.
+- **[`nginx.sh`](nginx.sh)**: Installs Nginx, creates reverse proxy virtual host `vproapp`, tests configuration, and enables service.
+
+---
+
+## 🚀 One-Command Deployment
+
+Ensure the `vagrant-hostmanager` plugin is installed:
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/BolohanAndrei/DevOps.git
-cd DevOps
+vagrant plugin install vagrant-hostmanager
+```
 
-# 2. View all project branches
-git branch -a
+Start and provision all 5 virtual machines:
 
-# 3. Switch into a project branch
-git checkout multi-vm
-# or
-git checkout local-setup-manual
-# or
-git checkout local-setup-automated
-
-# 4. Launch the environment
+```bash
 vagrant up
 ```
 
 ---
 
-## 📌 Repository Roadmap
+## 🧪 Validation & Verification
 
-- [x] Multi-VM basic hosting (Website + WordPress LAMP)
-- [x] Multi-tier Enterprise Architecture (Manual step-by-step: Nginx, Tomcat, RabbitMQ, Memcache, MySQL)
-- [x] Infrastructure as Code (Automated Bash provisioning)
+1. Check HTTP response:
+   ```bash
+   curl -I http://192.168.56.11
+   ```
+2. Open your web browser at:
+   ```
+   http://192.168.56.11
+   ```
+3. Test login:
+   - **Username**: `admin_vp`
+   - **Password**: `admin_vp`
+
+---
+
+## 🧹 Teardown
+
+```bash
+# Power off all VMs
+vagrant halt
+
+# Destroy all VMs and free disk space
+vagrant destroy -f
+```
