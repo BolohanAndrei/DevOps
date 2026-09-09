@@ -3,6 +3,11 @@
 This module sets up two isolated virtual machines using Vagrant and VirtualBox, illustrating private networking, host customization, and service provisioning.
 
 ---
+> [!NOTE]
+> ### 🎓 Course & Project Attribution
+> This module is developed as part of the **`DevOps Beginners to Advanced`** course by **Imran Teli**.
+> Special credits to **Imran Teli** and his project repositories: [devopshydclub/vprofile-project](https://github.com/devopshydclub/vprofile-project).
+---
 
 ## 🏗️ Topology & Inventory
 
