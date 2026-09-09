@@ -24,21 +24,24 @@
 ---
 
 > [!NOTE]
-> ### 🚧 Project Status: **To Be Continued...**
-> This repository is an evolving DevOps portfolio and learning hub. Modules are continuously added as separate feature/project branches as I progress through real-world DevOps architectures.
+>
+> ### 🚧 Project Status & Attribution
+>
+> This repository is an evolving DevOps portfolio and learning hub developed as part of the course **`DevOps Beginners to Advanced`** by **Imran Teli**.
+> Special credits to **Imran Teli** and his project repository: [devopshydclub/vprofile-project](https://github.com/devopshydclub/vprofile-project). Modules are continuously added as separate feature/project branches as I progress through real-world DevOps architectures.
 
 ---
 
 ## 🛠️ Core Technologies & Tooling
 
-| Category | Technologies & Tools | Purpose in Projects |
-| :--- | :--- | :--- |
-| **Virtualization & OS** | **Linux** (CentOS 7, Ubuntu 22.04), **VMs**, **Vagrant** | Multi-node guest provisioning, private networking, and host-guest synchronization. |
-| **Web & App Servers** | **Nginx**, **Apache Tomcat** | Reverse proxy, SSL termination, load balancing, and Java Servlet/WAR container hosting. |
-| **Data & Cache** | **MySQL / MariaDB**, **Memcached** | Relational data persistence, schema seeding, and sub-millisecond memory caching. |
-| **Messaging** | **RabbitMQ** | Asynchronous message broker, task queue, and decouple inter-service dependencies. |
-| **Cloud & Networking** | **AWS**, **Domains & DNS** | Cloud infrastructure lift-and-shift, domain routing, and internal host resolution. |
-| **Code Quality & CI/CD**| **SonarQube (Sonar)**, **Maven**, **Git** | Static code analysis, quality gates, dependency packaging, and version control. |
+| Category                 | Technologies & Tools                                     | Purpose in Projects                                                                     |
+| :----------------------- | :------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| **Virtualization & OS**  | **Linux** (CentOS 7, Ubuntu 22.04), **VMs**, **Vagrant** | Multi-node guest provisioning, private networking, and host-guest synchronization.      |
+| **Web & App Servers**    | **Nginx**, **Apache Tomcat**                             | Reverse proxy, SSL termination, load balancing, and Java Servlet/WAR container hosting. |
+| **Data & Cache**         | **MySQL / MariaDB**, **Memcached**                       | Relational data persistence, schema seeding, and sub-millisecond memory caching.        |
+| **Messaging**            | **RabbitMQ**                                             | Asynchronous message broker, task queue, and decouple inter-service dependencies.       |
+| **Cloud & Networking**   | **AWS**, **Domains & DNS**                               | Cloud infrastructure lift-and-shift, domain routing, and internal host resolution.      |
+| **Code Quality & CI/CD** | **SonarQube (Sonar)**, **Maven**, **Git**                | Static code analysis, quality gates, dependency packaging, and version control.         |
 
 ---
 
@@ -46,22 +49,24 @@
 
 Every project module lives in its own dedicated Git branch with isolated configurations, scripts, and documentation:
 
-| Module | Branch Name | Status | Tech Stack | Highlights | Switch Command |
-| :---: | :--- | :---: | :--- | :--- | :--- |
-| **01** | [`multi-vm`](#-module-01-multi-vm) | ✅ Completed | Linux (CentOS, Ubuntu), VMs, Vagrant, Domains | Dual-VM setup hosting static web template & LAMP WordPress stack. | `git checkout multi-vm` |
-| **02** | [`local-setup-manual`](#-module-02-local-setup-manual) | ✅ Completed | Linux, VMs, MySQL/MariaDB, Memcache, RabbitMQ, Tomcat, Nginx | 5-Tier enterprise Java stack configured manually step-by-step. | `git checkout local-setup-manual` |
-| **03** | [`local-setup-automated`](#-module-03-local-setup-automated) | ✅ Completed | Vagrant Shell Provisioning, Bash, Linux Services | Fully automated deployment of the 5-tier architecture via Bash scripts. | `git checkout local-setup-automated` |
-| **04** | `Coming Next` | ⏳ *Coming Next* | Coming Next | Coming Next | *TBD* |
+| Module | Branch Name                                                                         |    Status    | Tech Stack                                                   | Highlights                                                                     | Switch Command                       |
+| :----: | :---------------------------------------------------------------------------------- | :----------: | :----------------------------------------------------------- | :----------------------------------------------------------------------------- | :----------------------------------- |
+| **01** | [`multi-vm`](#-module-01-multi-vm)                                                  | ✅ Completed | Linux (CentOS, Ubuntu), VMs, Vagrant, Domains                | Dual-VM setup hosting static web template & LAMP WordPress stack.              | `git checkout multi-vm`              |
+| **02** | [`local-setup-manual`](#-module-02-local-setup-manual)                              | ✅ Completed | Linux, VMs, MySQL/MariaDB, Memcache, RabbitMQ, Tomcat, Nginx | 5-Tier enterprise Java stack configured manually step-by-step.                 | `git checkout local-setup-manual`    |
+| **03** | [`local-setup-automated`](#-module-03-local-setup-automated)                        | ✅ Completed | Vagrant Shell Provisioning, Bash, Linux Services             | Fully automated deployment of the 5-tier architecture via Bash scripts.        | `git checkout local-setup-automated` |
+| **04** | [`containers-intro`](https://github.com/BolohanAndrei/DevOps/tree/containers-intro) | ✅ Completed | Docker, Multi-Stage Builds, Docker Compose, Vagrant          | Introduction to containerization, multi-stage Dockerfiles, and Docker Compose. | `git checkout containers-intro`      |
 
 ---
 
 ## 🏛️ System Architectures
 
 ### 1. Multi-VM Setup (`multi-vm`)
+
 - **`website` (192.168.33.15)**: CentOS 7 with Apache HTTPD serving a responsive web template.
 - **`wordpress` (192.168.33.16)**: Ubuntu 22.04 LTS running a full LAMP stack with WordPress and MySQL.
 
 ### 2. Enterprise 5-Tier Web Architecture (`local-setup-manual` & `local-setup-automated`)
+
 ```mermaid
 flowchart LR
     Client([User / Browser]) -->|Port 80| NGINX[Nginx Reverse Proxy\n192.168.56.11]
@@ -76,6 +81,7 @@ flowchart LR
 ## 💻 Prerequisites & Environment Setup
 
 Ensure the following tools are installed on your workstation:
+
 - [VirtualBox](https://www.virtualbox.org/)
 - [Vagrant](https://developer.hashicorp.com/vagrant/install)
 - Vagrant Hostmanager Plugin:
@@ -115,3 +121,11 @@ vagrant up
 - [x] Multi-VM basic hosting (Website + WordPress LAMP)
 - [x] Multi-tier Enterprise Architecture (Manual step-by-step: Nginx, Tomcat, RabbitMQ, Memcache, MySQL)
 - [x] Infrastructure as Code (Automated Bash provisioning)
+- [x] Containerization & Docker Compose (Docker containers)
+
+---
+
+## 🎓 Course & Repository Credits
+
+- **Course**: Developed following the **`DevOps Beginners to Advanced`** course by **Imran Teli**.
+- **Source Repository**: Special credits to **Imran Teli** and his project repository: [devopshydclub/vprofile-project](https://github.com/devopshydclub/vprofile-project).
