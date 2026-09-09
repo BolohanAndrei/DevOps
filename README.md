@@ -3,6 +3,11 @@
 This module completely automates the multi-VM 5-tier architecture using Vagrant shell provisioners and modular Bash provisioning scripts.
 
 ---
+> [!NOTE]
+> ### 🎓 Course & Project Attribution
+> This module is developed as part of the **`DevOps Beginners to Advanced`** course by **Imran Teli**.
+> Special credits to **Imran Teli** and his project repositories: [devopshydclub/vprofile-project](https://github.com/devopshydclub/vprofile-project).
+---
 
 ## 🏗️ Architecture & VM Topology
 
