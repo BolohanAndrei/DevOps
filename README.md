@@ -3,6 +3,11 @@
 This module demonstrates hands-on Linux system administration, database initialization, caching, message queuing, Java application packaging, and reverse proxying across 5 interconnected virtual machines.
 
 ---
+> [!NOTE]
+> ### 🎓 Course & Project Attribution
+> This module is developed as part of the **`DevOps Beginners to Advanced`** course by **Imran Teli**.
+> Special credits to **Imran Teli** and his project repositories: [devopshydclub/vprofile-project](https://github.com/devopshydclub/vprofile-project).
+---
 
 ## 📐 Architecture & Inventory
 
