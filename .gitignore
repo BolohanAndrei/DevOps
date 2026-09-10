@@ -1,0 +1,28 @@
+# Vagrant cache and private keys
+.vagrant/
+*.box
+
+# VirtualBox & Hyper-V VM state
+*.vdi
+*.vmdk
+*.nvram
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build artifacts & packages
+target/
+*.war
+*.jar
+*.class
+*.tar.gz
+*.zip
